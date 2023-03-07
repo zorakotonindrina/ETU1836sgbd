@@ -17,10 +17,14 @@ public class Fenetre extends JFrame{
     JTextField jtext;
     Object res;
     Response myrep;
+    JPanel panel;
 
     public Fenetre(SocketClient kil)throws Exception
     {
         this.kill=kil;
+        this.setBackground(Color.PINK);
+        this.setSize(600, 300);
+        this.setVisible(true);
        // kill=new SocketClient(InetAddress.getLocalHost().getHostName(), 9876);
         this.setLayout(null);
         this.setTitle("Fanoratana requette");
@@ -37,12 +41,18 @@ public class Fenetre extends JFrame{
         this.add(jl);
         this.add(jtext);
         this.add(boot);
-        Response res=new Response("you are connected ");
+        panel=new JPanel();
+        panel.setBounds(400, 10, 700, 1000);
+        panel.setBackground(Color.WHITE);
+        Response res=new Response("you are connected ",0,this);
         this.myrep=res;
-        this.add(myrep);
-        this.setBackground(Color.PINK);
-        this.setSize(600, 300);
-        this.setVisible(true);
+        //this.add(myrep);
+        //panel.add(this.myrep);
+        panel.setLayout(null);
+        this.add(panel);
+        
+        //this.add(panel);
+
 
     }
 
@@ -76,6 +86,14 @@ public class Fenetre extends JFrame{
 
     public void setMyrep(Response myrep) {
         this.myrep = myrep;
+    }
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public void setPanel(JPanel panel) {
+        this.panel = panel;
     }
 
 }

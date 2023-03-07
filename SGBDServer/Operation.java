@@ -33,7 +33,9 @@ public class Operation{
             String[] mot=requette.split(" ");
             String data="";
             Object valiny=null;
-            // System.out.println("Significatif req " + getSignificatif(requette));
+            String[][] resp=null;
+            String[] resp2=null; 
+            System.out.println("Significatif req " + getSignificatif(requette));
             if(levelBase(requette) == true){
                 String nom_base=mot[getNameBase(requette)];
                 if(getSignificatif(requette) == -1){
@@ -45,6 +47,12 @@ public class Operation{
                     use_database(nom_base);
                     valiny= "Database "+ nom_base +" used";
                     return valiny;
+                }
+                else if(getSignificatif(requette) == -3){
+                    resp2=showdatabase();
+                    valiny= resp2;
+                    mprint(resp2);
+                    return resp2;
                 }
             }
             else{
@@ -64,8 +72,7 @@ public class Operation{
                     String attribu= mot[atrr];
                     String setAtr=mot[getSetAttribu(requette)];
                     System.out.println("----------------------------------------------");
-                    String[][] resp=null;
-                    String[] resp2=null; 
+                   
                     if(getSignificatif(requette) == 1){
                         String[] values=getValues(requette); 
                         insert(nom_table, values);
@@ -112,6 +119,13 @@ public class Operation{
                         valiny= "Table "+ nom_table +" Deleted";
                         return valiny;
                     }
+                    else if(getSignificatif(requette) == -3){
+                        System.out.println(requette);
+                        resp2=showTable(this.getDatabase_Name());
+                        valiny= resp2;
+                        mprint(resp2);
+                        return resp2;
+                    }
                     else if(getSignificatif(requette) == 4){
                         System.out.println(requette);
                         update(nom_table, attribu, setAtr, primarykey, condition);
@@ -121,9 +135,9 @@ public class Operation{
                     }
                     else if(getSignificatif(requette) == 5){
                         System.out.println(requette);
-                       resp2= describe(nom_table);
-                       valiny=getVector(resp2);
-                       mprint(resp2);
+                       resp= describe(nom_table);
+                       //valiny=getVector(resp);
+                       print(resp);
                        return resp2;
                         
             
@@ -169,6 +183,7 @@ public class Operation{
             
         } catch (Exception e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
             // TODO: handle exception
         }
         return "Echec";
@@ -192,16 +207,56 @@ public class Operation{
 
 
 
+    // public String[] show_database{
+
+    // }
+
+    public String[] showdatabase(){
+        try {
+            File fich=new File("Database");
+            File[] table=fich.listFiles();
+            String[] rep=new String[table.length];
+            for (int i = 0; i < rep.length; i++) {
+                    rep[i]=table[i].getName();             
+            }
+            //mprint(rep);
+            return rep;
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return null;
+    }
+
+
+    public String[] showTable(String nom_base){
+        try {
+            File fich=new File("Database/"+nom_base);
+            File[] table=fich.listFiles();
+            String[] rep=new String[table.length];
+            for (int i = 0; i < rep.length; i++) {
+                rep[i]=table[i].getName();
+                rep[i]=rep[i].substring(0, rep[i].length()-4);
+            }
+            //mprint(rep);
+            return rep;
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        return null;
+    }
+
+
+
     public void create_database(String nom_base) throws Exception
     {
         try {
-            File fichier=new File(nom_base);
+            File fichier=new File("Database/"+ nom_base);
             boolean b=fichier.mkdir();
             if( b == true){
-                System.out.println("database " + nom_base + "dia voaforona soa aman tsara");
+                System.out.println("database " + nom_base + " dia voaforona soa aman tsara");
             }
             if( b == false){
-              throw new Exception("database " + nom_base + "dia efa misy");
+              throw new Exception("database " + nom_base + " dia efa misy");
             }
         } catch (Exception e) {
             //TODO: handle exception
@@ -220,15 +275,14 @@ public class Operation{
 
    public void create_table(String nom_table,String[] attribu) throws Exception
    {
-        File fichier=new File(this.database_Name+"/"+nom_table + ".txt");
+        File fichier=new File("Database/"+this.database_Name+"/"+nom_table + ".txt");
         //fichier.createNewFile();
-        boolean b=fichier.mkdir();
         FileWriter sorato;
         FileReader vakio;
         try{
-            if(b == true){
+            // if(b == true){
                 sorato =new FileWriter(fichier, true);
-                vakio = new FileReader(this.database_Name+"/"+nom_table + ".txt");
+                vakio = new FileReader("Database/"+ this.database_Name+"/"+nom_table + ".txt");
                 BufferedReader mdonnee = new BufferedReader(vakio);
                 BufferedWriter donnee = new BufferedWriter(sorato);
                 String anatiny = mdonnee.readLine();
@@ -242,21 +296,23 @@ public class Operation{
                 }
                 donnee.close();
                 System.out.println("table voaforona soa aman tsara");
-            }
-            if(b == false){
-                throw new Exception("Table already exist");
-            }
+            // }
+            // if(b == false){
+            //     throw new Exception("Table already exist");
+            // }
             
         } catch (IOException e) {
             //e.printStackTrace();
         }
    }
 
-   public String[] describe(String nom_table){
+   public String[][] describe(String nom_table){
        String[][] strtab= select_Etoile(nom_table);
-        String[] val=new String[strtab[0].length];
+        String[][] val=new String[strtab[0].length][2];
        for (int i = 0; i < strtab[0].length; i++) {
-           val[i]=strtab[0][i] + "                   String ";
+
+           val[i][0]=strtab[0][i];
+           val[i][1]="String";
        } 
        return val;
    }
@@ -274,7 +330,7 @@ public class Operation{
                         numline = i;
                     }
                 }
-                Path path= Paths.get(this.database_Name+"/"+nom_table + ".txt");
+                Path path= Paths.get("Database/"+ this.database_Name+"/"+nom_table + ".txt");
                 java.util.List<String> lines= Files.readAllLines(path);
                 String ins="";
                 for(int i=0; i<modif.length; i++){
@@ -328,7 +384,7 @@ public class Operation{
                 nbl ++;
             }
             rea.close();
-            BufferedWriter bfw= new BufferedWriter(new FileWriter(this.database_Name+"/"+nom_table + ".txt"));
+            BufferedWriter bfw= new BufferedWriter(new FileWriter("Database/"+ this.database_Name+"/"+nom_table + ".txt"));
             bfw.write(strbf.toString());
             bfw.close();
             System.out.println("Voafafa soa aman tsara");
@@ -340,12 +396,12 @@ public class Operation{
 
 
    public void insert(String nom_table, String[] values){
-    File fichier=new File(this.database_Name+"/"+nom_table + ".txt");
+    File fichier=new File("Database/"+ this.database_Name+"/"+nom_table + ".txt");
     FileWriter sorato;
     FileReader vakio;
     try{
         sorato =new FileWriter(fichier, true);
-        vakio = new FileReader(this.database_Name+"/"+nom_table + ".txt");
+        vakio = new FileReader("Database/"+ this.database_Name+"/"+nom_table + ".txt");
         BufferedReader mdonnee = new BufferedReader(vakio);
         BufferedWriter donnee = new BufferedWriter(sorato);
         String anatiny = mdonnee.readLine();
@@ -370,7 +426,7 @@ public class Operation{
             int lign=count_liste(nom_table);
             int col =count_Field(nom_table);
             String[][] rep= new String[lign][col];
-            File fesh= new File(this.database_Name+"/"+nom_table + ".txt");
+            File fesh= new File("Database/"+ this.database_Name+"/"+nom_table + ".txt");
             try{
                 FileReader r= new FileReader(fesh);
                 BufferedReader br = new BufferedReader(r);
@@ -526,7 +582,7 @@ public class Operation{
    public int count_Field(String nom_table){
     int k=0;
         try{
-            File fesh= new File(this.database_Name+"/"+nom_table + ".txt");
+            File fesh= new File("Database/"+ this.database_Name+"/"+nom_table + ".txt");
             FileReader r= new FileReader(fesh);
             BufferedReader br = new BufferedReader(r);
             String f=br.readLine();
@@ -543,7 +599,7 @@ public class Operation{
    public int count_liste(String nom_table){
         int k = 0;
         try {
-            File fi = new File(this.database_Name+"/"+nom_table + ".txt");
+            File fi = new File("Database/"+ this.database_Name+"/"+nom_table + ".txt");
             FileReader r= new FileReader(fi);
             BufferedReader br=new BufferedReader(r);
             String rdl= br.readLine();
@@ -597,7 +653,7 @@ public class Operation{
             for (int j = 0; j < count_Field(nom_table); j++) {
                 //System.out.println(mot[i] + " = " + strtab[0][0]);
                 if((mot[i].compareToIgnoreCase(strtab[0][j])==0 )&&(i != getCondition(req))){
-                    System.out.println("Hita le attribu");
+                    //System.out.println(" attribu trouve ");
                     ind = i;
                 }
             }
@@ -638,7 +694,10 @@ public class Operation{
         int indice=0;
         for(int i = 0; i < mot.length; i++) {
             if(mot[i].compareToIgnoreCase("database")== 0 ) {
-                indice=i + 1;
+                if(i+1 < mot.length){
+                    indice=i + 1;
+                }
+                
             }
         }
         return indice;
@@ -665,6 +724,9 @@ public class Operation{
             }
             if(mot[i].compareToIgnoreCase("Use")==0){
                 return   val = -2;
+            }
+            if(mot[i].compareToIgnoreCase("Show")==0){
+                return   val = -3;
             }
             if(mot[i].compareToIgnoreCase("Create")==0){
               return   val=0;

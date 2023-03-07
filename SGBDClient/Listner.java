@@ -11,6 +11,7 @@ public class Listner implements MouseListener{
     SocketClient kill;
     String req;
     Fenetre fenetre;
+    JScrollBar  js;
     public Listner(Fenetre f) {
         this.fenetre=f;
         try {
@@ -21,7 +22,7 @@ public class Listner implements MouseListener{
         }
        
        
-    }
+    } 
     public void mouseClicked(MouseEvent e){ 
         try {
             
@@ -32,13 +33,20 @@ public class Listner implements MouseListener{
                 kill.setFromServer(req);
                 Object res=kill.getFromServer();
                 fenetre.setRes(res);
-                Response rep=new Response(res);
-                rep.setBounds(450, 10, 600, 600);
+                Response rep=new Response(res,fenetre.getMyrep().getLevely(),fenetre);
+                //rep.setBounds(450, 10, 600, 600);
                 rep.setBackground(Color.WHITE);
-                //fenetre.add(rep);
+                fenetre.getMyrep().setLevely(rep.getLevely());
+                System.out.println("levell "+ rep.getLevely());
                 fenetre.setMyrep(rep);
-                fenetre.add(fenetre.getMyrep());
+
+                //fenetre.getPanel().add(rep);
+                //fenetre.add(fenetre.getMyrep());
+                //fenetre.add(rep);
+                //fenetre.add(rep);
+                //fenetre.add(fenetre.getPanel());
                 fenetre.setVisible(true);
+
                 // kill.getOis().close();
                 // kill.getOos().close();
            

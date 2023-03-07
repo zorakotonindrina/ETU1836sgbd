@@ -11,6 +11,15 @@ public class Main {
         System.out.println(9876);
        EcouteClient ecoute=new EcouteClient();
        ecoute.start();
+
+    // Operation op=new Operation();
+    // //op.Execute("show database");
+    // op.Execute("use database exemple");
+    // //op.Execute("create table music ( artist,titre );");
+    // op.Execute("create table test ( id,nom )");
+    // op.select_Etoile("Emp");
+
+    // op.print(op.select_Etoile("Emp"));
       
     }
 }
